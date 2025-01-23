@@ -10,13 +10,12 @@ export default function MainPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Use GET request with a token in the headers
-        const response = await axios.get(`${BACKEND_URI}/api/user/getUserData`, {
+        const response = await axios.get(`${BACKEND_URI}/api/user/getuserdata`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Pass token in Authorization header
+            Authorization: `Bearer ${localStorage.getItem("token")}`, 
           },
         });
-        setUserData(response.data); // Store fetched data in state
+        setUserData(response.data); 
       } catch (err) {
         console.error("Error fetching user data: ", err);
       }
@@ -26,18 +25,7 @@ export default function MainPage() {
 
   return (
     <div className="home-container">
-      <Header />
-      <div className="user-details">
-        <h2>User Details</h2>
-        {userData ? (
-          <div>
-            <p>Email: {userData.email}</p>
-            <p>Name: {userData.name}</p>
-          </div>
-        ) : (
-          <p>Loading user data...</p>
-        )}
-      </div>
+      <Header userData={userData} />
     </div>
   );
 }

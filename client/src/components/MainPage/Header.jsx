@@ -1,5 +1,5 @@
 
-export default function Header() {
+export default function Header({userData}) {
   return (
     <div className="home-header-container">
         <div className="home-header-heading-container">
@@ -7,7 +7,7 @@ export default function Header() {
         </div>
         <div className="home-header-content-container">
             <div className="home-header-content-profile-container">
-                <span></span>
+                <span>👋 Hello {userData.username}</span>
                 <div></div>
             </div>
         </div>

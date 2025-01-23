@@ -21,7 +21,7 @@
     justify-content: space-between;
 }
 .home-header-heading-container {
-    font-size: 2.5vw;
+    font-size: min(2.5vw , 40px);
     font-weight: 700;
     font-family: "montserrat";
     color: var(--textBlue);
@@ -29,4 +29,32 @@
 .home-header-content-container {
     display: flex;
     flex-direction: row;
+}
+.home-header-content-container {
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+
+}
+.home-header-content-profile-container {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.home-header-content-profile-container span {
+    height: 100%;
+    padding-right: 0.5vw;
+    align-content: center;
+    font-weight: 500;
+    font-size: min(1vw , 18px);
+}
+.home-header-content-profile-container div {
+    height: 100%;
+    aspect-ratio: 1;
+    border-radius: 1000px;
+    border: var(--blue) 2px solid;
+    background-image: url("../assets/home-profile.png");
+    background-size: 50%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
