@@ -1,11 +1,15 @@
-import { useEffect, useState } from "react";
-import Header from "../components/MainPage/Header";
+import { useEffect, useState } from "react";  
 import "../styles/MainPage.css";
 import axios from "axios";
 import { BACKEND_URI } from "../utils/connectivity";
+import { useNavigate } from "react-router-dom"
+import Navbar from "../components/MainPage/Navbar";
+import Home from "../components/MainPage/Home";
 
 export default function MainPage() {
   const [userData, setUserData] = useState({});
+  const [page,setPage] = useState("home")
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchData() {
@@ -18,6 +22,8 @@ export default function MainPage() {
         setUserData(response.data); 
       } catch (err) {
         console.error("Error fetching user data: ", err);
+        localStorage.removeItem("token")
+        // navigate("/auth")
       }
     }
     fetchData();
@@ -25,7 +31,8 @@ export default function MainPage() {
 
   return (
     <div className="home-container">
-      <Header userData={userData} />
+      <Navbar page={page} setPage={setPage} />
+      <Home page={page} setPage={setPage} userData={userData}/>
     </div>
   );
 }
