@@ -1,7 +1,10 @@
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Home(props) {
+  const navigate = useNavigate()
+
   const tasks = [
     { name: "permutation", status: "incomplete", language: "c" },
     { name: "combination", status: "incomplete", language: "c" },
@@ -37,12 +40,15 @@ export default function Home(props) {
     dart: "/src/assets/images/dart.png",
   };
 
-  // Calculate solved and remaining tasks
   const solvedTasks = tasks.filter((task) => task.status === "complete").length;
   const totalTasks = tasks.length;
   const remainingTasks = totalTasks - solvedTasks;
   const progressPercentage = (solvedTasks / totalTasks) * 100;
 
+
+  const handleLanguagePress = (language) => {
+    navigate(`/compiler/?language=${language}`);
+  }
   return (
     <div className="home-content-container">
       <div className="home-content-left-container">
@@ -61,20 +67,23 @@ export default function Home(props) {
         <div className="home-content-languages-container">
           <div className="home-content-languages-inner-container">
             {languages.map((language, index) => (
-              <div key={index} className="home-content-element-container">
-                <img
-                  src={images[language]}
-                  alt={language}
-                  style={{
-                    width:
-                      language === "cpp" ||
-                      language === "php" ||
-                      language === "go"
-                        ? "42%"
-                        : "37%",
-                  }}
-                />
-              </div>
+              <button
+              key={index}
+              className="home-content-element-container"
+              onClick={() => handleLanguagePress(language)} // Corrected here
+            >
+              <img
+                src={images[language]}
+                alt={language}
+                style={{
+                  width:
+                    language === "cpp" || language === "php" || language === "go"
+                      ? "42%"
+                      : "37%",
+                }}
+              />
+            </button>
+            
             ))}
           </div>
         </div>
@@ -135,7 +144,7 @@ export default function Home(props) {
                     textSize: "15px",
                     pathColor: "lightgreen",
                     textColor: "var(--black)",
-                    fontFamily : "Lexend Zetta",
+                    fontFamily: "Lexend Zetta",
                     trailColor: "var(--red)",
                     strokeLinecap: "butt",
                   })}
@@ -146,7 +155,17 @@ export default function Home(props) {
             <div className="home-content-right-tasks-calender-container"></div>
           </div>
         </div>
-        <div className="home-content-right-sandbox-container"></div>
+        <div className="home-content-right-sandbox-container">
+          <div className="home-content-right-sanbox-heading">SANDBOXES</div>
+          <div className="home-content-right-sandbox-content-container">
+            <div className="home-content-right-sandbox-content-add">
+              <div className="home-content-right-sandbox-content-add-plus">
+                +
+              </div>
+              <div>Add</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

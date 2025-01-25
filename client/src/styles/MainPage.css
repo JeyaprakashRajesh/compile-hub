@@ -145,6 +145,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
+    border: none;
 }
 .home-content-element-container {
     width: 22%;
@@ -156,6 +157,8 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    outline: none;
+    box-shadow: none;
 }
 .home-content-element-container img{
     width: 37%;
@@ -250,15 +253,7 @@
     background-repeat: no-repeat;
     background-size: 40%;
 }
-.home-content-right-sandbox-container {
-    height: 45%;
-    width: 90%;
-    background-color: var(--lightRed);
-    border-radius: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+
 .home-content-right-tasks-progress-container {
     height: 30%;
     width: 100%;
@@ -286,4 +281,61 @@
 }
 .CircularProgressbar-text {
     font-family: 'Lexend Zetta', sans-serif;
+}
+.home-content-right-sandbox-container {
+    width: 80%;
+    height: 45%;
+    padding-left: 5%;
+    padding-right: 5%;
+    background-color: var(--lightRed);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.home-content-right-sanbox-heading {
+    font-family: "Lexend zetta";
+    font-weight: 500;
+    font-size: 2vw;
+    margin-top: 3%;
+    margin-bottom: 2%;
+}
+.home-content-right-sandbox-content-container {
+    flex: 1;
+    margin-bottom: 3%;
+    display: flex;
+    flex-direction: row;
+    gap: 7.5%
+}
+.home-content-right-sandbox-content-add {
+    height: 100%;
+    width: 20%;
+    border-radius: 15px;
+    border: dashed var(--red) 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2%;
+    font-family: "lexend zetta";
+    font-weight: 800;
+    font-size: 1.4vw;
+    color: var(--red);
+    transition: all 0.2s ease;
+}
+.home-content-right-sandbox-content-add div {
+    opacity: 0.7;
+}
+.home-content-right-sandbox-content-add-plus {
+    width: 30%;
+    aspect-ratio: 1;
+    align-content: center;
+    text-align: center;
+    border-radius: 1000px;
+    background-color: var(--red);
+    color: white;
+    font-size: 1.6vw;
+}
+.home-content-right-sandbox-content-add:hover {
+    scale: 1.05;
+    cursor: pointer;
 }

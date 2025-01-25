@@ -7,6 +7,7 @@ const databaseConnection = require("./config/database");
 
 const AuthRouter = require("./Routes/AuthRoutes");
 const UserRouter = require("./Routes/UserRoutes");
+const CompileRouter = require("./Routes/CompileRoutes")
 
 const app = express();
 app.use(cors());
@@ -16,6 +17,8 @@ databaseConnection();
 
 app.use("/api/Auth", AuthRouter);
 app.use("/api/user", UserRouter);
+app.use("/api/compile" , CompileRouter)
+
 
 app.listen(PORT, () => {
   console.log("Server listening on port:", PORT);
