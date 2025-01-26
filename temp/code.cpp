@@ -1,9 +1,7 @@
-#include<iostream>
-
+#include <iostream>
 using namespace std;
 
-int main( ) {
-    int a= 10;
-    cout<<"a";
+int main() {
+    cout << "Hello, World!" << endl;
     return 0;
 }

@@ -7,30 +7,41 @@ import Monoco from "../components/Compiler/Monoco";
 import { useState } from "react";
 import sun from "../assets/images/sun.png";
 import moon from "../assets/images/moon.png";
-import axios from "axios"
-import {BACKEND_URI} from "../utils/connectivity"
+import axios from "axios";
+import { BACKEND_URI } from "../utils/connectivity";
 
 export default function Compiler() {
   const [theme, setTheme] = useState("dark");
   const [searchParams] = useSearchParams();
   const language = searchParams.get("language");
   const [code, setCode] = useState("");
-  const [output, setOutput] = useState(""); 
+  const [output, setOutput] = useState("");
 
   const runCode = async () => {
     try {
-      const response = await axios.post(`http://localhost:3000/api/compile/execute`, {
-        code,
-        language,
-      });
-  
-      setOutput(response.data.output); 
+      const response = await axios.post(
+        `http://localhost:3000/api/compile/execute`,
+        {
+          code,
+          language,
+        }
+      );
+
+      setOutput(response.data.output);
     } catch (error) {
       setOutput("Error: Could not execute the code.");
       console.error("Error executing code:", error);
     }
   };
-  
+
+  const formatOutput = (outputText) => {
+    return outputText.split("\n").map((line, index) => (
+      <span key={index}>
+        {line}
+        <br />
+      </span>
+    ));
+  };
 
   return (
     <div
@@ -84,7 +95,7 @@ export default function Compiler() {
               <Monoco
                 language={language}
                 theme={theme}
-                code={code} 
+                code={code}
                 setCode={setCode}
               />
             </div>
@@ -104,7 +115,9 @@ export default function Compiler() {
               <div
                 className="compiler-content-bottom-content-output-content"
                 style={{ color: theme === "dark" ? "white" : "black" }}
-              >{output}</div>
+              >
+                {formatOutput(output)}
+              </div>
             </div>
           </div>
         </div>

@@ -1,10 +1,12 @@
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
+import link from "../../assets/images/link.png";
+import { BACKEND_URI } from "../../utils/connectivity"; 
+import axios from "axios";
 
 export default function Home(props) {
-  const navigate = useNavigate()
-
+  const navigate = useNavigate();
   const tasks = [
     { name: "permutation", status: "incomplete", language: "c" },
     { name: "combination", status: "incomplete", language: "c" },
@@ -45,10 +47,36 @@ export default function Home(props) {
   const remainingTasks = totalTasks - solvedTasks;
   const progressPercentage = (solvedTasks / totalTasks) * 100;
 
-
   const handleLanguagePress = (language) => {
     navigate(`/compiler/?language=${language}`);
-  }
+  };
+  const handleLinkClick = async (platform) => {
+    try {
+      const username = prompt(`Enter your ${platform} username:`);
+      if (!username) return;
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in!");
+        return;
+      }
+
+      const response = await axios.put(
+       `http://localhost:3000/api/user/link-platform`,
+        { platform, username }, 
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      props.setUserData(response.data);
+      alert(`${platform} linked successfully!`);
+    } catch (err) {
+      console.error("Error linking platform:", err);
+      alert("Failed to link platform. Please try again.");
+    }
+  };
+
   return (
     <div className="home-content-container">
       <div className="home-content-left-container">
@@ -68,22 +96,23 @@ export default function Home(props) {
           <div className="home-content-languages-inner-container">
             {languages.map((language, index) => (
               <button
-              key={index}
-              className="home-content-element-container"
-              onClick={() => handleLanguagePress(language)} // Corrected here
-            >
-              <img
-                src={images[language]}
-                alt={language}
-                style={{
-                  width:
-                    language === "cpp" || language === "php" || language === "go"
-                      ? "42%"
-                      : "37%",
-                }}
-              />
-            </button>
-            
+                key={index}
+                className="home-content-element-container"
+                onClick={() => handleLanguagePress(language)} // Corrected here
+              >
+                <img
+                  src={images[language]}
+                  alt={language}
+                  style={{
+                    width:
+                      language === "cpp" ||
+                      language === "php" ||
+                      language === "go"
+                        ? "42%"
+                        : "37%",
+                  }}
+                />
+              </button>
             ))}
           </div>
         </div>
@@ -152,7 +181,47 @@ export default function Home(props) {
                 />
               </div>
             </div>
-            <div className="home-content-right-tasks-calender-container"></div>
+            <div className="home-content-right-tasks-platforms-container">
+              <div className="home-content-right-tasks-platforms-element">
+                <div className="home-content-right-tasks-platforms-element-heading">
+                  LeetCode :{" "}
+                </div>
+                <div className="home-content-right-tasks-platforms-element-status">
+                  {props.userData.leetcode ? "linked" : "NotLinked"}
+                  {!props.userData.leetcode && (
+                    <button onClick={() => handleLinkClick("leetcode")}>
+                      <img src={link} alt="Link LeetCode" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="home-content-right-tasks-platforms-element">
+                <div className="home-content-right-tasks-platforms-element-heading">
+                  CodeChef :{" "}
+                </div>
+                <div className="home-content-right-tasks-platforms-element-status">
+                  {props.userData.codechef ? "linked" : "NotLinked"}
+                  {!props.userData.codechef && (
+                    <button onClick={() => handleLinkClick("codechef")}>
+                      <img src={link} alt="Link CodeChef" />
+                    </button>
+                  )}
+                </div>
+              </div>
+              <div className="home-content-right-tasks-platforms-element">
+                <div className="home-content-right-tasks-platforms-element-heading">
+                  Github :{" "}
+                </div>
+                <div className="home-content-right-tasks-platforms-element-status">
+                  {props.userData.github ? "linked" : "NotLinked"}
+                  {!props.userData.github && (
+                    <button onClick={() => handleLinkClick("github")}>
+                      <img src={link} alt="Link GitHub" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="home-content-right-sandbox-container">

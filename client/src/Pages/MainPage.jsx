@@ -20,10 +20,10 @@ export default function MainPage() {
           },
         });
         setUserData(response.data); 
+        console.log("User data: ", response.data);
       } catch (err) {
         console.error("Error fetching user data: ", err);
         localStorage.removeItem("token")
-        // navigate("/auth")
       }
     }
     fetchData();
@@ -32,7 +32,7 @@ export default function MainPage() {
   return (
     <div className="home-container">
       <Navbar page={page} setPage={setPage} />
-      <Home page={page} setPage={setPage} userData={userData}/>
+      <Home page={page} setPage={setPage} userData={userData} setUserData={setUserData}/>
     </div>
   );
 }

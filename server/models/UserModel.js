@@ -18,7 +18,13 @@ const UserModel = new schema( {
     password : {
         type : String,
         require : true
-    }
+    },
+    leetcode : {
+        type : String,
+    },
+    github : {
+        type : String,
+    },
 })
 
 const User = mongoose.model("User" , UserModel)

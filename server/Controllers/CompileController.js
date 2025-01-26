@@ -2,10 +2,10 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const DOCKER_CONTAINER_ID = "26158250b085";
+const DOCKER_CONTAINER_ID = "1306b37d2d84";
 
 async function CompileCode(req, res) {
-    console.log("compilecode")
+  console.log("compilecode");
   const { code, language } = req.body;
 
   if (!code || !language) {
@@ -26,40 +26,88 @@ async function CompileCode(req, res) {
   }
 
   let command = "";
-  let containerFilePath = `/tmp/code.${language}`;
+  const containerFilePath = `/tmp/code.${language}`;
+  const compiledFilePath = `/tmp/code.class`; // For Java specifically
 
   switch (language) {
+    case "java":
+      command = `javac ${containerFilePath} 2>&1 && java -cp /tmp code`;
+      break;
     case "javascript":
     case "js":
       command = `node ${containerFilePath}`;
       break;
+    case "python":
+    case "python3":
+      command = `python3 ${containerFilePath}`; // Use python3 to run Python scripts
+      break;
+    case "c":
+      command = `gcc ${containerFilePath} -o /tmp/code.out 2>&1 && chmod +x /tmp/code.out && /tmp/code.out`;
+      break;
+    case "cpp":
+      command = `g++ ${containerFilePath} -o /tmp/code.out 2>&1 && chmod +x /tmp/code.out && /tmp/code.out`;
+      break;
+    case "php":
+      command = `php ${containerFilePath}`;
+      break;
+    case "ruby":
+      command = `ruby ${containerFilePath}`;
+      break;
+    case "shell":
+      command = `sh ${containerFilePath}`;
+      break;
+    case "go":
+      command = `go run ${containerFilePath}`;
+      break;
+    case "rust":
+      command = `rustc ${containerFilePath} -o /tmp/code && /tmp/code`;
+      break;
+    case "kotlin":
+      command = `kotlinc ${containerFilePath} -include-runtime -d /tmp/code.jar && java -jar /tmp/code.jar`;
+      break;
+    case "dart":
+      command = `dart ${containerFilePath}`;
+      break;
     default:
-      return res.status(400).json({ output: "Unsupported language for this test" });
+      return res.status(400).json({ output: "Unsupported language" });
   }
 
+  // Step 1: Copy the file into the container
   exec(
     `docker cp ${filePath} ${DOCKER_CONTAINER_ID}:${containerFilePath}`,
     (copyError, copyStdout, copyStderr) => {
       if (copyError) {
         console.error(`Error copying file: ${copyStderr}`);
-        return res.status(500).json({ output: `Error copying file: ${copyStderr}` });
+        return res.status(200).json({ output: `Error copying file: ${copyStderr}` });
       }
 
+      // Step 2: Compile and execute the code
       exec(
         `docker exec -i ${DOCKER_CONTAINER_ID} sh -c "${command}"`,
         (execError, execStdout, execStderr) => {
           if (execError) {
-            console.error(`Error executing Java code: ${execError}`);
+            console.error(`Compilation/Execution Error: ${execError}`);
             console.error(`Stdout: ${execStdout}`);
             console.error(`Stderr: ${execStderr}`);
-            return res.status(500).json({ output: `Error: ${execStderr || execStdout}` });
+            return res.status(200).json({
+              output: execStderr || execStdout || "Unknown error occurred.",
+            });
           }
-      
-          console.log('Java Output:', execStdout);
-          return res.json({ output: execStdout });
+
+          console.log("Execution Output:", execStdout);
+
+          // Clean up: Remove the source file and compiled artifacts
+          exec(
+            `docker exec -i ${DOCKER_CONTAINER_ID} rm ${containerFilePath}`,
+            () => {}
+          );
+          if (language === "java" || language === "c" || language === "cpp" || language === "rust" || language === "kotlin") {
+            exec(`docker exec -i ${DOCKER_CONTAINER_ID} rm ${compiledFilePath}`, () => {});
+          }
+
+          return res.status(200).json({ output: execStdout });
         }
       );
-      
     }
   );
 }

@@ -339,3 +339,50 @@
     scale: 1.05;
     cursor: pointer;
 }
+
+
+
+.home-content-right-tasks-platforms-container {
+    flex: 1;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+.home-content-right-tasks-platforms-element {
+    height: 25%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "Lexend Zetta";
+}
+.home-content-right-tasks-platforms-element-heading {
+    font-size: 1vw;
+    font-weight: 600;
+}
+.home-content-right-tasks-platforms-element-status {
+    font-size: 0.9vw;
+    display: flex;
+    align-items: center;
+}
+.home-content-right-tasks-platforms-element-status img {
+    height: 70%;
+}
+.home-content-right-tasks-platforms-element-status button {
+    width: 2vw;
+    aspect-ratio: 1;
+    background-color: var(--black);
+    border: none;
+    border-radius: 5px;
+    margin-left: 0.5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.home-content-right-tasks-platforms-element-status button:hover {
+    scale: 1.05;
+    cursor: pointer;
+}
