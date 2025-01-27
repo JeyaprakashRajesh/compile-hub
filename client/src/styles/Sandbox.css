@@ -1,0 +1,49 @@
+.sandbox-container {
+    height: 100vh; 
+    width: 100vw; 
+    background-color: var(--gray);
+    overflow: hidden;
+}
+
+.sandbox-container * {
+    transition: none;
+}
+
+.sandbox-heading-container {
+    height: 10%; 
+    width: 100%;
+    background-color: var(--black);
+    display: flex;
+    flex-direction: row;
+    padding: 0% 3%;
+    align-items: center;
+    gap: 2vw;
+}
+
+.sandbox-heading-container img {
+    height: 80%; 
+}
+
+.sandbox-heading-container span {
+    font-size: 1.7vw;
+    font-family: "lexend zetta";
+    color: var(--red);
+    font-weight: 600;
+}
+
+.sandbox-panel-group {
+    height: 80%;
+    width: 100%;
+}
+
+.sandbox-file-container {
+    background-color: transparent;
+    overflow-y: auto; 
+}
+
+.sandbox-terminal-container {
+}
+.sandbox-code-container {
+}
+.sandbox-preview-container {
+}

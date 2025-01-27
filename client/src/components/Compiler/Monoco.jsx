@@ -1,8 +1,10 @@
 import Editor from '@monaco-editor/react';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export default function Monoco(props) {
   const monacoRef = useRef(null);
+  
+
 
   const handleEditorDidMount = (editor, monaco) => {
     monacoRef.current = editor;

@@ -306,6 +306,30 @@
     flex-direction: row;
     gap: 7.5%
 }
+.home-content-right-sandbox-content-inner-container {
+    flex: 1;
+    margin-bottom: 3%;
+    display: flex;
+    flex-direction: row;
+    gap: 7.5%
+}
+.home-content-right-sandbox-content-element {
+    width: 20%;
+    height: inherit;
+    background-color: var(--black);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    color: white;
+    font-family: "poppins";
+    font-weight: 600;
+    align-items: center;
+    justify-content: center;
+}
+.home-content-right-sandbox-content-element:hover {
+    scale: 1.05;
+    cursor: pointer;
+}
 .home-content-right-sandbox-content-add {
     height: 100%;
     width: 20%;
@@ -385,4 +409,41 @@
 .home-content-right-tasks-platforms-element-status button:hover {
     scale: 1.05;
     cursor: pointer;
+}
+.home-content-right-sandbox-form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10%;
+}
+.home-content-right-sandbox-form input {
+    width: 45%;
+    padding: 1% 5%;
+    background-color: var(--red);
+    color: white;
+    font-family: "poppins";
+    border: 2px solid var(--black);
+    border-radius: 5px;
+    outline: none;
+    font-size: 1.3vw;
+}
+.home-content-right-sandbox-form button {
+    font-family: "poppins";
+    color: white;
+    font-weight: 600;
+    padding: 2% 5%;
+    font-size: 1vw;
+    background-color: var(--black);
+    border: none;
+    border-radius: 5px;
+}
+.home-content-right-sandbox-form div {
+    gap: 2vw;
+    display: flex;
+    flex-direction: row;
+}
+.home-content-right-sandbox-form button:hover {
+    cursor: pointer;
+    scale: 1.05;
 }

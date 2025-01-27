@@ -151,7 +151,7 @@
 }   
 .compiler-content-bottom-content-output-container {
     height: 98%;
-    width: 49%; 
+    width: 49%;         
     border-radius: 5px;
     display: flex;
     flex-direction: column;

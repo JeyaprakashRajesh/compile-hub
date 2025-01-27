@@ -2,10 +2,15 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
 import link from "../../assets/images/link.png";
-import { BACKEND_URI } from "../../utils/connectivity"; 
+import { BACKEND_URI } from "../../utils/connectivity";
 import axios from "axios";
+import { useState } from "react";
 
 export default function Home(props) {
+  const [showSandboxForm, setShowSandboxForm] = useState(false);
+  const [sandboxName, setSandboxName] = useState("");
+  const [isCreatingSandbox, setIsCreatingSandbox] = useState(false);
+  const sandboxes = props.userData.sandboxes
   const navigate = useNavigate();
   const tasks = [
     { name: "permutation", status: "incomplete", language: "c" },
@@ -62,8 +67,8 @@ export default function Home(props) {
       }
 
       const response = await axios.put(
-       `http://localhost:3000/api/user/link-platform`,
-        { platform, username }, 
+        `http://localhost:3000/api/user/link-platform`,
+        { platform, username },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -74,6 +79,34 @@ export default function Home(props) {
     } catch (err) {
       console.error("Error linking platform:", err);
       alert("Failed to link platform. Please try again.");
+    }
+  };
+
+  const handleCreateSandbox = async () => {
+    if (!sandboxName.trim()) {
+      alert("Please enter a sandbox name.");
+      return;
+    }
+
+    try {
+      setIsCreatingSandbox(true); // Set loading state
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        `${BACKEND_URI}/api/user/create-sandbox`,
+        { projectName: sandboxName },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Sandbox created successfully!");
+      props.setUserData(response.data.user); // Update user data with the new sandbox
+      setSandboxName(""); // Clear input
+      setShowSandboxForm(false); // Hide form
+    } catch (err) {
+      console.error("Error creating sandbox:", err);
+      alert("Failed to create sandbox. Please try again.");
+    } finally {
+      setIsCreatingSandbox(false); // Reset loading state
     }
   };
 
@@ -227,12 +260,48 @@ export default function Home(props) {
         <div className="home-content-right-sandbox-container">
           <div className="home-content-right-sanbox-heading">SANDBOXES</div>
           <div className="home-content-right-sandbox-content-container">
-            <div className="home-content-right-sandbox-content-add">
-              <div className="home-content-right-sandbox-content-add-plus">
-                +
+            {showSandboxForm ? (
+              <div className="home-content-right-sandbox-form">
+                <input
+                  type="text"
+                  placeholder="Enter sandbox name"
+                  value={sandboxName}
+                  onChange={(e) => setSandboxName(e.target.value)}
+                />
+                <div>
+                  <button
+                  onClick={handleCreateSandbox}
+                  disabled={isCreatingSandbox}
+                >
+                  {isCreatingSandbox ? "Creating..." : "Create Sandbox"}
+                </button>
+                <button onClick={() => setShowSandboxForm(false)}>
+                  Cancel
+                </button>
+                </div>
+                
               </div>
-              <div>Add</div>
-            </div>
+            ) : (
+              <div className="home-content-right-sandbox-content-inner-container">
+             
+              <div
+                className="home-content-right-sandbox-content-add"
+                onClick={() => setShowSandboxForm(true)}
+              >
+                <div className="home-content-right-sandbox-content-add-plus">
+                  +
+                </div>
+                <div>Add</div>
+              </div>
+              {sandboxes && sandboxes.map((item , index) => {
+                return(
+                  <div key={index} className="home-content-right-sandbox-content-element" onClick={() => {navigate(`/sandbox/?projectName=${item.projectName}`)}}>
+                      {item.projectName}
+                    </div>
+                )
+              })}
+              </div>
+            )}
           </div>
         </div>
       </div>
