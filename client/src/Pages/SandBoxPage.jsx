@@ -1,55 +1,79 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import "../styles/Sandbox.css"
+import logo from "../assets/images/logo.png"
+import {FourSquare} from "react-loading-indicators"
 
 export default function SandBoxPage() {
   const [searchParams] = useSearchParams();
   const projectName = searchParams.get("projectName");
   const token = localStorage.getItem("token");
-
+  const [islaunch , setLaunch] = useState(false)
   const [codeServerUrl, setCodeServerUrl] = useState("");
 
   useEffect(() => {
-    // Initialize socket connection
     const socket = io("http://localhost:3001", {
       auth: { token },
     });
-
-    // Notify server about the project
+  
     socket.emit("join-sandbox", { projectName });
-
-    // Listen for the code server URL and display it
+  
     socket.on("sandbox-started", (data) => {
       console.log("Container started:", data);
-      console.log(data.codeServerUrl)
-      setCodeServerUrl(data.codeServerUrl); // Set the code-server URL received from backend
+      setCodeServerUrl(data.codeServerUrl);
     });
-
-    // Listen for updates from the backend
+  
     socket.on("sandbox-output", (data) => {
-      console.log("Output:", data); // Handle this in your UI
+      console.log("Output:", data); 
     });
-
-    // Cleanup on unmount
+  
     return () => {
-      socket.emit("leave-sandbox");
+      socket.emit("leave-sandbox", { projectName });
       socket.disconnect();
     };
   }, [projectName, token]);
+  
 
   return (
-    <div>
-      <h2>Sandbox Environment: {projectName}</h2>
+    <div className="sandbox-container">
+      <div className="sandbox-heading-container">
+        <div className="sandbox-heading-content-container">
+          <img src={logo}></img>
+          
+          <span>COMPILE HUB</span>
+        </div>
+        <div className="sandbox-heading-heading">
+          sandbox
+        </div>
+        <div className="sandbox-heading-extras-container">
+          <button>
+            VIEW OUTPUT
+          </button>
+        </div>
+        
+      </div>
       {codeServerUrl ? (
-        <iframe
+        !islaunch ? 
+        
+        <div className="sandbox-content-container">
+          <div>Click To Start Your Container 🚀</div>
+          <button onClick={() => {setLaunch(true)}}>launch</button>
+        </div>
+        : 
+        <iframe 
           src={codeServerUrl}
           width="100%"
-          height="800px"
+          height="92%"
           title="Code Editor"
         />
+        
       ) : (
-        <p>Loading the sandbox environment...</p>
+        <div className="sandbox-loading-container">
+          <div>initializing your container</div>
+          <FourSquare color="var(--red)" size="medium" text="" textColor="" />  
+        </div>
       )}
     </div>
-  );
+  ); 
 }

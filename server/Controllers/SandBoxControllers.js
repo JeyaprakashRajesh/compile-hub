@@ -67,9 +67,10 @@ async function handleSocketConnection(socket) {
     });
 
     // Function to start a new Docker container
-    function startNewContainer(containerName, port, projectPath) {
+    function startNewContainer(containerName, port, projectPath) { 
+      console.log(`Resolved project path: ${projectPath}`);
       // Command to run the Code-Server (VSCode) inside Docker with no authentication
-      const command = `docker run -d -p $ {port}:8443 -v ${projectPath}:/workspace --name ${containerName} -e CODE_SERVER_AUTH=none -e SUDO_PASSWORD=user linuxserver/code-server`;
+      const command = `docker run -d -p ${port}:8443 -v ${projectPath}:/config/workspace --name ${containerName} -e CODE_SERVER_AUTH=none -e SUDO_PASSWORD=user code-sandbox`;
       
     
       console.log(`Running command: ${command}`);
@@ -77,7 +78,7 @@ async function handleSocketConnection(socket) {
       exec(command, (err, stdout, stderr) => {
         if (err) {
           console.error("Error starting Docker container:", err);
-          console.error("stderr:", stderr);
+          console.error("stderr:", stderr); 
           socket.emit("sandbox-error", { message: "Failed to start the sandbox." });
         } else {
           console.log("Docker container started successfully:", stdout);
@@ -97,9 +98,17 @@ async function handleSocketConnection(socket) {
   }); 
 
   // Clean up on disconnect
-  socket.on("leave-sandbox", ({ projectName }) => {
+  socket.on("leave-sandbox", (payload) => {
+    console.log("leave-sandbox") 
+    if (!payload || !payload.projectName) {
+      console.error("Error: 'projectName' is missing in 'leave-sandbox' event.");
+      return;
+    } 
+  
+    const { projectName } = payload;
     const sanitizedProjectName = projectName.replace(/[^a-zA-Z0-9_.-]/g, "-"); // Sanitize the project name
     const containerName = `sandbox-${email}-${sanitizedProjectName}`;
+    
     exec(`docker rm -f ${containerName}`, (err) => {
       if (err) {
         console.error(`Error stopping Docker container ${containerName}:`, err);
@@ -108,6 +117,7 @@ async function handleSocketConnection(socket) {
       }
     });
   });
+  
 }
 
 module.exports = { handleSocketConnection };
