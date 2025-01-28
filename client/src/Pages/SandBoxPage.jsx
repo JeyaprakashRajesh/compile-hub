@@ -1,99 +1,55 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
-import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
-import "../styles/Sandbox.css"
-import Monoco from "../components/Compiler/Monoco";
-import logo from "../assets/images/logo.png"
-
+import { io } from "socket.io-client";
 
 export default function SandBoxPage() {
-  const [sandboxData, setSandboxData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [searchParams] = useSearchParams()
-  const theme = "dark";
-  const [code , setCode] = useState("")
-  const [language , setLanguage] = useState("")
-  const [isAnyFileSelected , setAnyFileSelected] = useState(false)
+  const [searchParams] = useSearchParams();
+  const projectName = searchParams.get("projectName");
+  const token = localStorage.getItem("token");
+
+  const [codeServerUrl, setCodeServerUrl] = useState("");
 
   useEffect(() => {
-    const fetchSandboxDetails = async () => {
-      try {
-        
-        const projectName = searchParams.get("projectName")
+    // Initialize socket connection
+    const socket = io("http://localhost:3001", {
+      auth: { token },
+    });
 
-        if (!projectName) {
-          alert("Project name is missing in the URL.");
-          setLoading(false);
-          return;
-        }
+    // Notify server about the project
+    socket.emit("join-sandbox", { projectName });
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-          alert("You must be logged in.");
-          setLoading(false);
-          return;
-        }
+    // Listen for the code server URL and display it
+    socket.on("sandbox-started", (data) => {
+      console.log("Container started:", data);
+      console.log(data.codeServerUrl)
+      setCodeServerUrl(data.codeServerUrl); // Set the code-server URL received from backend
+    });
 
-        console.log("Sending projectName as query param:", projectName);
+    // Listen for updates from the backend
+    socket.on("sandbox-output", (data) => {
+      console.log("Output:", data); // Handle this in your UI
+    });
 
-        const response = await axios.get(
-          `http://localhost:3000/api/user/getsandbox?projectName=${encodeURIComponent(projectName)}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        setSandboxData(response.data);
-      } catch (err) {
-        console.error("Error fetching sandbox details:", err);
-      } finally {
-        setLoading(false);
-      }
+    // Cleanup on unmount
+    return () => {
+      socket.emit("leave-sandbox");
+      socket.disconnect();
     };
-
-    fetchSandboxDetails();
-  }, [searchParams]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!sandboxData) {
-    return <div>Loading...</div>;
-  }
+  }, [projectName, token]);
 
   return (
-    <div className="sandbox-container">
-      <div className="sandbox-heading-container">
-        <img src={logo} alt="" />
-        <span>COMPILE HUB</span>
-      </div>
-      <PanelGroup className="sandbox-panel-group" direction="horizontal" style={{height : "90%"}}>
-  <Panel className="sandbox-file-container" minSize={12} defaultSize={12}>
-  </Panel>
-  <PanelResizeHandle />
-  <Panel >
-    <PanelGroup style={{ height : "100%" , width : "100%"}} direction="vertical" >
-      <Panel defaultSize={70} >
-        <PanelGroup direction="horizontal" style={{height : "100%" , width : "100%"}}>
-          <Panel className="sandbox-code-container">
-            <Monoco theme={theme} code={code} setCode={code} />
-          </Panel>
-          <PanelResizeHandle />
-          <Panel className="sandbox-preview-container">
-
-          </Panel>
-        </PanelGroup>
-      </Panel>
-      <PanelResizeHandle />
-      <Panel minSize={5} defaultSize={15} className="sandbox-terminal-container">
-        awdda
-      </Panel>
-    </PanelGroup>
-  </Panel>
-</PanelGroup>
-
+    <div>
+      <h2>Sandbox Environment: {projectName}</h2>
+      {codeServerUrl ? (
+        <iframe
+          src={codeServerUrl}
+          width="100%"
+          height="800px"
+          title="Code Editor"
+        />
+      ) : (
+        <p>Loading the sandbox environment...</p>
+      )}
     </div>
   );
 }

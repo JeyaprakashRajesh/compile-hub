@@ -1,13 +1,9 @@
-const PORT = process.env.PORT || 3000;
-const dotenv = require("dotenv").config();
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 const cors = require("cors");
-
+const dotenv = require("dotenv").config();
 const databaseConnection = require("./config/database");
-
-const AuthRouter = require("./Routes/AuthRoutes");
-const UserRouter = require("./Routes/UserRoutes");
-const CompileRouter = require("./Routes/CompileRoutes")
 
 const app = express();
 app.use(cors());
@@ -15,11 +11,22 @@ app.use(express.json());
 
 databaseConnection();
 
-app.use("/api/Auth", AuthRouter);
-app.use("/api/user", UserRouter);
-app.use("/api/compile" , CompileRouter)
+// Main API routes
+app.use("/api/Auth", require("./Routes/AuthRoutes"));
+app.use("/api/user", require("./Routes/UserRoutes"));
 
-
-app.listen(PORT, () => {
-  console.log("Server listening on port:", PORT);
+// Set up Socket.io server
+const httpServer = http.createServer(app); // Use the same `httpServer` for socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // This allows all origins, change as per your security needs
+    methods: ["GET", "POST"],
+  },
 });
+
+// Use the io instance with routes that require sockets
+app.use("/api/sandbox", require("./Routes/SandBoxRoutes")(io));
+
+// Listen on ports
+app.listen(3000, () => console.log("API server running on port 3000"));
+httpServer.listen(3001, () => console.log("Socket.io server running on port 3001"));
