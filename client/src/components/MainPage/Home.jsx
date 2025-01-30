@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import link from "../../assets/images/link.png";
 import { BACKEND_URI } from "../../utils/connectivity";
 import axios from "axios";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 
 export default function Home(props) {
   const [showSandboxForm, setShowSandboxForm] = useState(false);
@@ -12,12 +12,22 @@ export default function Home(props) {
   const [isCreatingSandbox, setIsCreatingSandbox] = useState(false);
   const sandboxes = props.userData.sandboxes
   const navigate = useNavigate();
-  const tasks = [
-    { name: "permutation", status: "incomplete", language: "c" },
-    { name: "combination", status: "incomplete", language: "c" },
-    { name: "longest subarray", status: "complete", language: "java" },
-    { name: "unique path", status: "complete", language: "java" },
-  ];
+  const [tasks, setTasks] = useState([]);
+
+  useEffect(() => {
+    if(props.userData.tasks) {
+      const currentDate = new Date().toLocaleDateString("en-GB").split("/").join("-"); 
+    console.log(props.userData.tasks)
+    const todayTasks = props.userData.tasks.find(task => task.date === currentDate);
+    
+    if (todayTasks) {
+      setTasks(todayTasks.tasks); 
+    } else {
+      setTasks(null); 
+    }
+    }
+    
+  }, [props.userData.tasks]);
   const languages = [
     "python",
     "javascript",
@@ -45,6 +55,8 @@ export default function Home(props) {
     rust: "/src/assets/images/rust.png",
     kotlin: "/src/assets/images/kotlin.png",
     dart: "/src/assets/images/dart.png",
+    leetcode : "/src/assets/images/leetcode.png",
+    codechef : "/src/assets/images/codechef.png"
   };
 
   const solvedTasks = tasks.filter((task) => task.status === "complete").length;
@@ -89,7 +101,7 @@ export default function Home(props) {
     }
 
     try {
-      setIsCreatingSandbox(true); // Set loading state
+      setIsCreatingSandbox(true);
       const token = localStorage.getItem("token");
       const response = await axios.post(
         `${BACKEND_URI}/api/user/create-sandbox`,
@@ -99,14 +111,14 @@ export default function Home(props) {
         }
       );
       alert("Sandbox created successfully!");
-      props.setUserData(response.data.user); // Update user data with the new sandbox
-      setSandboxName(""); // Clear input
-      setShowSandboxForm(false); // Hide form
+      props.setUserData(response.data.user); 
+      setSandboxName("");
+      setShowSandboxForm(false); 
     } catch (err) {
       console.error("Error creating sandbox:", err);
       alert("Failed to create sandbox. Please try again.");
     } finally {
-      setIsCreatingSandbox(false); // Reset loading state
+      setIsCreatingSandbox(false);
     }
   };
 
@@ -131,7 +143,7 @@ export default function Home(props) {
               <button
                 key={index}
                 className="home-content-element-container"
-                onClick={() => handleLanguagePress(language)} // Corrected here
+                onClick={() => handleLanguagePress(language)} 
               >
                 <img
                   src={images[language]}
@@ -155,34 +167,35 @@ export default function Home(props) {
           <div className="home-content-right-tasks-element">
             <div className="home-content-right-tasks-heading">TASKS</div>
             <div className="home-content-right-tasks-content-container">
-              {tasks.map((task, index) => {
-                return (
-                  <div
-                    className="home-content-right-tasks-content-element-container"
-                    key={index}
-                  >
-                    <div className="home-content-right-tasks-content-element-status-container">
-                      <div
-                        style={{
-                          backgroundColor:
-                            task.status === "incomplete"
-                              ? "var(--red)"
-                              : "lightgreen",
-                        }}
-                      ></div>
-                    </div>
-                    <div className="home-content-right-tasks-content-element-name-container">
-                      {task.name}
-                    </div>
+            {tasks ? (
+              tasks.map((task, index) => (
+                <div
+                  className="home-content-right-tasks-content-element-container"
+                  key={index}
+                  onClick={() => window.open(task.problemlink)}
+                >
+                  <div className="home-content-right-tasks-content-element-status-container">
                     <div
-                      className="home-content-right-tasks-content-element-language-container"
                       style={{
-                        backgroundImage: `url(${images[task.language]})`,
+                        backgroundColor:
+                          task.status === "incomplete" ? "var(--red)" : "lightgreen",
                       }}
                     ></div>
                   </div>
-                );
-              })}
+                  <div className="home-content-right-tasks-content-element-name-container">
+                    {task.name}
+                  </div>
+                  <div
+                    className="home-content-right-tasks-content-element-language-container"
+                    style={{
+                      backgroundImage: `url(${images[task.platform]})`,
+                    }}
+                  ></div>
+                </div>
+              ))
+            ) : (
+              <p>No tasks for today.</p>
+            )}
             </div>
           </div>
           <div className="home-content-right-tasks-element">

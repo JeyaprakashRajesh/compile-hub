@@ -31,6 +31,19 @@ const UserModel = new schema({
       creationDate: { type: Date, default: Date.now },
     },
   ],
+  tasks : [
+    {
+      date : String,
+      tasks : [
+        {
+          problemlink : String,
+          name : String,
+          status : String,
+          platform : String
+        }
+      ]
+    }
+  ]
 });
 
 const User = mongoose.model("User", UserModel);

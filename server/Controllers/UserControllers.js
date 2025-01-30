@@ -14,7 +14,6 @@ async function getUserDetails(req, res) {
   }
 }
 
-// Function to update platforms (e.g., user credentials on external platforms)
 async function updatePlatforms(req, res) {
   const { platform, username } = req.body;
   const email = req.decoded_data.email;

@@ -2,7 +2,7 @@ const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 
-const DOCKER_CONTAINER_ID = "b9c6b2cff55a";
+const DOCKER_CONTAINER_ID = "e3f027b5545c";
 
 async function CompileCode(req, res) {
   console.log("compilecode");
@@ -27,7 +27,7 @@ async function CompileCode(req, res) {
 
   let command = "";
   const containerFilePath = `/tmp/code.${language}`;
-  const compiledFilePath = `/tmp/code.class`; // For Java specifically
+  const compiledFilePath = `/tmp/code.class`;
 
   switch (language) {
     case "java":
@@ -39,7 +39,8 @@ async function CompileCode(req, res) {
       break;
     case "python":
     case "python3":
-      command = `python3 ${containerFilePath}`; // Use python3 to run Python scripts
+      console.log("py") 
+      command = `python3 ${containerFilePath}`; 
       break;
     case "c":
       command = `gcc ${containerFilePath} -o /tmp/code.out 2>&1 && chmod +x /tmp/code.out && /tmp/code.out`;
@@ -71,8 +72,6 @@ async function CompileCode(req, res) {
     default:
       return res.status(400).json({ output: "Unsupported language" });
   }
-
-  // Step 1: Copy the file into the container
   exec(
     `docker cp ${filePath} ${DOCKER_CONTAINER_ID}:${containerFilePath}`,
     (copyError, copyStdout, copyStderr) => {
@@ -80,8 +79,6 @@ async function CompileCode(req, res) {
         console.error(`Error copying file: ${copyStderr}`);
         return res.status(200).json({ output: `Error copying file: ${copyStderr}` });
       }
-
-      // Step 2: Compile and execute the code
       exec(
         `docker exec -i ${DOCKER_CONTAINER_ID} sh -c "${command}"`,
         (execError, execStdout, execStderr) => {
@@ -95,8 +92,6 @@ async function CompileCode(req, res) {
           }
 
           console.log("Execution Output:", execStdout);
-
-          // Clean up: Remove the source file and compiled artifacts
           exec(
             `docker exec -i ${DOCKER_CONTAINER_ID} rm ${containerFilePath}`,
             () => {}

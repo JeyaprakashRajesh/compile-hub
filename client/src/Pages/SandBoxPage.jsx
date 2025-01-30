@@ -6,11 +6,12 @@ import logo from "../assets/images/logo.png"
 import {FourSquare} from "react-loading-indicators"
 
 export default function SandBoxPage() {
-  const [searchParams] = useSearchParams();
-  const projectName = searchParams.get("projectName");
-  const token = localStorage.getItem("token");
+  const [searchParams] = useSearchParams()
+  const projectName = searchParams.get("projectName")
+  const token = localStorage.getItem("token")
   const [islaunch , setLaunch] = useState(false)
-  const [codeServerUrl, setCodeServerUrl] = useState("");
+  const [codeServerUrl, setCodeServerUrl] = useState("")
+  const [devServerUrl , setDevServerUrl] = useState("")
 
   useEffect(() => {
     const socket = io("http://localhost:3001", {
@@ -22,6 +23,7 @@ export default function SandBoxPage() {
     socket.on("sandbox-started", (data) => {
       console.log("Container started:", data);
       setCodeServerUrl(data.codeServerUrl);
+      setDevServerUrl(data.devServerUrl)
     });
   
     socket.on("sandbox-output", (data) => {
@@ -34,7 +36,9 @@ export default function SandBoxPage() {
     };
   }, [projectName, token]);
   
-
+  const handleViewOutput = () => {
+    window.open(devServerUrl)
+  }
   return (
     <div className="sandbox-container">
       <div className="sandbox-heading-container">
@@ -47,7 +51,7 @@ export default function SandBoxPage() {
           sandbox
         </div>
         <div className="sandbox-heading-extras-container">
-          <button>
+          <button onClick={handleViewOutput}>
             VIEW OUTPUT
           </button>
         </div>

@@ -5,6 +5,7 @@ import { BACKEND_URI } from "../utils/connectivity";
 import { useNavigate } from "react-router-dom"
 import Navbar from "../components/MainPage/Navbar";
 import Home from "../components/MainPage/Home";
+import Task from "../components/MainPage/Task";
 
 export default function MainPage() {
   const [userData, setUserData] = useState({});
@@ -32,7 +33,12 @@ export default function MainPage() {
   return (
     <div className="home-container">
       <Navbar page={page} setPage={setPage} />
+      {page === "home" ? 
       <Home page={page} setPage={setPage} userData={userData} setUserData={setUserData}/>
+      : 
+      <Task />
+      }
+      
     </div>
   );
 }

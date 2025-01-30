@@ -11,22 +11,20 @@ app.use(express.json());
 
 databaseConnection();
 
-// Main API routes
 app.use("/api/Auth", require("./Routes/AuthRoutes"));
 app.use("/api/user", require("./Routes/UserRoutes"));
-
-// Set up Socket.io server
-const httpServer = http.createServer(app); // Use the same `httpServer` for socket.io
+app.use("/api/compile" , require("./Routes/CompileRoutes"))
+app.use("/api/admin" , require("./Routes/AdminRoutes"))
+  
+const httpServer = http.createServer(app); 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // This allows all origins, change as per your security needs
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
 
-// Use the io instance with routes that require sockets
 app.use("/api/sandbox", require("./Routes/SandBoxRoutes")(io));
 
-// Listen on ports
 app.listen(3000, () => console.log("API server running on port 3000"));
 httpServer.listen(3001, () => console.log("Socket.io server running on port 3001"));
