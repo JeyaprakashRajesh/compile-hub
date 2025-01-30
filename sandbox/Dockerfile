@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y nodejs npm
 RUN mkdir -p /config/data/User && \
     echo '{ \
     "workbench.colorTheme": "Default Dark Modern", \
-}' > /config/data/User/settings.json    `
+}' > /config/data/User/settings.json    

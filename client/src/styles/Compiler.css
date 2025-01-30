@@ -171,7 +171,8 @@
     flex: 1;
     padding-left: 4%;
     padding-right: 4%;
-    font-family: "Roboto Mono";
+    font-family: "Roboto Mono";     
+    overflow-y: scroll;
     
 }
 .compiler-content-bottom-heading-additional-theme {

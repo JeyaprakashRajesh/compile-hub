@@ -1,1 +1,25 @@
-print("hello")
+import itertools
+import time
+
+def brute_force_crack(target, charset, max_length):
+    start_time = time.time()
+    attempts = 0
+    
+    for length in range(1, max_length + 1):
+        for attempt in itertools.product(charset, repeat=length):
+            attempts += 1
+            guess = ''.join(attempt)
+            print(f"Trying: {guess}")  # Simulate brute-force process
+            if guess == target:
+                elapsed_time = time.time() - start_time
+                print(f"\nPassword found: {guess} in {attempts} attempts and {elapsed_time:.2f} seconds!")
+                return
+
+    print("\nPassword not found within the given length limit.")
+
+# Example usage
+target_password = "abcdef"
+character_set = "abcdefghijklmnopqrstuvwxyz"  # Change this to increase complexity
+max_length = 4  # Adjust length for longer computation
+
+brute_force_crack(target_password, character_set, max_length)

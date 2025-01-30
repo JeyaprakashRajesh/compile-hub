@@ -1,12 +1,58 @@
-const fs = require("fs");
-const path = require("path");
-const User = require("../models/UserModel");
-const { exec } = require("child_process");
+
+const User = require("../models/UserModel");  
+const axios = require('axios');
+
+
+function extractTitleSlug(problemLink) {
+  try {
+    return new URL(problemLink).pathname.split("/").filter(Boolean).pop();
+  } catch (err) {
+    console.error("Error extracting titleSlug from problem link:", err);
+    return "";
+  }
+}
+async function updateTaskStatus(userData) {
+  try {
+    const username = userData.leetcode;
+    const recentSubmissions = await getRecentSubmissions(username);
+
+    for (const task of userData.tasks) {  
+      for (const taskDetail of task.tasks) {
+        const problemTitleSlug = extractTitleSlug(taskDetail.problemlink);
+        const recentSubmission = recentSubmissions.find(sub => sub.titleSlug === problemTitleSlug);
+
+        if (recentSubmission) { 
+          taskDetail.status = recentSubmission.statusDisplay === "Accepted" ? "complete" : "incomplete";
+        }
+      }
+    }
+
+    await userData.save();
+  } catch (err) {
+    console.error('Error updating task status:', err);
+  }
+}
+async function getRecentSubmissions(username) {
+  try {
+    const response = await axios.get(`https://alfa-leetcode-api.onrender.com/userProfile/${username}`);
+    return response.data.recentSubmissions;
+  } catch (err) {
+    console.error('Error fetching recent submissions:', err);
+    return [];
+  }
+}
 
 async function getUserDetails(req, res) {
   try {
     const email = req.decoded_data.email;
     const data = await User.findOne({ email: email });
+
+    if (!data) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await updateTaskStatus(data);
+
     res.status(200).json(data);
   } catch (err) {
     console.error("Error fetching user details:", err);

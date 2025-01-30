@@ -23,7 +23,7 @@ export default function Home(props) {
     if (todayTasks) {
       setTasks(todayTasks.tasks); 
     } else {
-      setTasks(null); 
+      setTasks([]); 
     }
     }
     
@@ -214,7 +214,7 @@ export default function Home(props) {
               <div className="home-content-right-tasks-progress-bar-container">
                 <CircularProgressbar
                   value={progressPercentage}
-                  text={`${Math.round(progressPercentage)}%`}
+                  text={`${!Math.round(progressPercentage) ? 0 : Math.round(progressPercentage) }%`}
                   styles={buildStyles({
                     textSize: "15px",
                     pathColor: "lightgreen",
